@@ -1,0 +1,21 @@
+# /src/app/controllers/__init__.py
+
+from .auth_controller import auth_controller
+from .user_controller import user_controller
+from .customers_controller import customers_controller
+from .suppliers_controller import suppliers_controller
+from .products_controller import products_controller
+
+from .purchase_notes_controller import purchase_notes_controller
+from .purchase_line_controller import purchase_line_controller
+from .sales_notes_controller import sales_notes_controller
+from .sales_line_controller import sales_line_controller
+
+from .cash_account_controller import cash_account_controller
+from .cash_transfer_notes_controller import cash_transfer_notes_controller
+
+from .stock_locations_controller import stock_locations_controller
+from .stock_product_locations_controller import stock_product_locations_controller
+from .stock_deposit_notes_controller import stock_deposit_notes_controller
+
+# /src/app/controllers/__init__.py

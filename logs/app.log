@@ -1,0 +1,13 @@
+2026-01-20 19:29:06 [INFO] __main__: Starting DemeArizOil backend
+2026-01-20 19:29:07 [INFO] src.app.init_data: Created initial admin user
+2026-01-20 19:29:07 [INFO] src.app.init_data: Created DEME COMPANY stock location
+2026-01-20 19:29:07 [INFO] src.app.init_data: Created DEME cash account
+2026-01-20 19:29:07 [INFO] src.app.init_data: Initial data check completed successfully
+2026-01-20 19:29:07 [INFO] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-01-20 19:29:07 [INFO] werkzeug: [33mPress CTRL+C to quit[0m
+2026-01-20 19:29:07 [INFO] werkzeug:  * Restarting with stat
+2026-01-20 19:29:07 [INFO] __main__: Starting DemeArizOil backend
+2026-01-20 19:29:07 [INFO] src.app.init_data: Initial data check completed successfully
+2026-01-20 19:29:07 [WARNING] werkzeug:  * Debugger is active!
+2026-01-20 19:29:07 [INFO] werkzeug:  * Debugger PIN: 108-871-434
