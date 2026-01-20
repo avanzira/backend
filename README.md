@@ -1,6 +1,9 @@
 <!-- /README.md -->
 
-# DemeArizOil Backend v2.0
+# DemeArizOil Backend v3.0
+
+Backend Flask + SQLite para gestión de compras, ventas, stock y cash en DemeArizOil.  
+El comportamiento está definido por `docs/architecture_v3.0.md` y `docs/business_logic_v3.0.md`.
 
 ## Tecnologías
 
@@ -9,41 +12,59 @@
 - SQLAlchemy
 - JWT
 - Arquitectura Router → Controller → Service → Model
-- Soft Delete con `is_active` y `deleted_at`
+- Soft delete con `is_active` y `deleted_at`
 
-## Endpoints
+## Arquitectura v3.0 (resumen)
 
-Toda la API está bajo `/api`.  
-Documentación Swagger en:
+- Router: HTTP y binding al controller.
+- Controller: orquestación HTTP y serialización.
+- Service: reglas de negocio, validaciones y transacciones.
+- Model: estado persistente y `to_dict()`.
 
-/api/docs
+## Dominios y documentos clave
 
-markdown
-Copiar código
-
-## Seguridad
-
-- JWT obligatorio salvo `/` y `/auth/login`
-- Validación `password_changed_at`
-- Control de acceso centralizado en `jwt_middleware`
+- Master data: Users, Products, Customers, Suppliers.
+- Stock: StockLocation, StockProductLocation.
+- Cash: CashAccount.
+- Documentos:
+  - PurchaseNote + líneas
+  - SalesNote + líneas
+  - StockDepositNote
+  - CashTransferNote
 
 ## Lógica de negocio (resumen)
 
-- Stock nunca negativo
-- Cuentas DEME nunca negativas
-- Venta siempre pagada
-- Compra siempre genera movimientos
-- Movimientos atómicos
-- El cliente consume su propio stock antes que DEME
-- Deuda proveedor = SUM(pending)
-- Ajustes solo admin
-- Todos los documentos generan movimientos
+- Los movimientos NO se persisten; solo actualizan estado actual.
+- PurchaseNote: entra stock, registra pago inicial y deuda (no liquida deuda).
+- SalesNote: solo se vende lo pagado; stock sale primero del cliente y luego de DEME.
+- StockDepositNote: mueve stock entre ubicaciones, sin cash.
+- CashTransferNote: mueve cash entre cuentas y sirve para pagar deudas.
+- Deuda de proveedor vive solo en CashAccount (balance puede ser negativo).
+
+## API y endpoints
+
+- Prefijo: `/api`
+- Rutas públicas: `/`, `/api/auth/login`, `/api/auth/refresh`
+- Documentación de endpoints: `docs/API_ENDPOINTS.md`
+
+## Seguridad
+
+- JWT obligatorio en rutas protegidas.
+- Tokens invalidados si cambia `password_changed_at`.
+- Middleware centralizado en `jwt_middleware`.
 
 ## Soft delete
 
-Nunca se borra nada físicamente.
+No se borra físicamente. Se marca:
 
+```
 obj.is_active = False
-obj.deleted_at = datetime.utcnow()
+obj.deleted_at = datetime.now(timezone.utc)
+```
+
+## Tests
+
+- Smoke CRUD: `tests/test_900_api_smoke.py`
+- Flujo completo: `tests/test_100_full_flow_basic.py`
 
 <!-- /README.md -->
