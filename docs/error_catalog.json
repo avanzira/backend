@@ -1,0 +1,534 @@
+{
+  "meta": {
+    "format": "error-catalog-by-endpoint",
+    "error_shape": { "status": 0, "error": "ErrorName", "message": "..." }
+  },
+  "common": {
+    "auth_errors": [
+      { "status": 401, "error": "Unauthorized", "message": "Missing Authorization header" },
+      { "status": 401, "error": "Unauthorized", "message": "Invalid Authorization scheme" },
+      { "status": 401, "error": "Unauthorized", "message": "Invalid Authorization header format" },
+      { "status": 401, "error": "Unauthorized", "message": "Token has expired" },
+      { "status": 401, "error": "Unauthorized", "message": "Invalid token" },
+      { "status": 401, "error": "Unauthorized", "message": "Invalid token type" },
+      { "status": 401, "error": "Unauthorized", "message": "Invalid token (missing sub)" },
+      { "status": 401, "error": "Unauthorized", "message": "Invalid token (missing password_changed_at)" },
+      { "status": 401, "error": "Unauthorized", "message": "User not found or inactive" },
+      { "status": 401, "error": "Unauthorized", "message": "Token invalidated (password changed)" }
+    ],
+    "base": {
+      "body_required": { "status": 400, "error": "BadRequest", "message": "Request body is required" },
+      "invalid_field": { "status": 400, "error": "BadRequest", "message": "Invalid field: <field>" },
+      "integrity": { "status": 400, "error": "BadRequest", "message": "Integrity constraint violated" },
+      "db_create": { "status": 500, "error": "ServerError", "message": "Database error during create" },
+      "db_update": { "status": 500, "error": "ServerError", "message": "Database error during update" },
+      "db_delete": { "status": 500, "error": "ServerError", "message": "Database error during delete" },
+      "db_restore": { "status": 500, "error": "ServerError", "message": "Database error during restore" },
+      "unexpected": { "status": 500, "error": "ServerError", "message": "Unexpected error" }
+    }
+  },
+  "endpoints": {
+    "POST /api/auth/login": {
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "Request body required" },
+        { "status": 401, "error": "Unauthorized", "message": "Invalid credentials" },
+        { "status": 500, "error": "ServerError", "message": "Unexpected error" }
+      ]
+    },
+    "POST /api/auth/refresh": {
+      "errors": [
+        { "status": 401, "error": "Missing refresh token", "message": null },
+        { "status": 401, "error": "Unauthorized", "message": "Invalid refresh token" },
+        { "status": 401, "error": "Unauthorized", "message": "Token no longer valid" },
+        { "status": 500, "error": "ServerError", "message": "Unexpected error" }
+      ]
+    },
+    "GET /api/auth/me": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": []
+    },
+    "GET /api/users/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/users/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "User not found" }]
+    },
+    "POST /api/users/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "username, password, and rol are required" },
+        { "status": 403, "error": "Forbidden", "message": "Username already exists" }
+      ]
+    },
+    "PUT /api/users/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "User not found" },
+        { "status": 403, "error": "Forbidden", "message": "Cannot modify password directly" },
+        { "status": 403, "error": "Forbidden", "message": "Only admin can modify roles" },
+        { "status": 403, "error": "Forbidden", "message": "Username already exists" }
+      ]
+    },
+    "DELETE /api/users/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "User not found" },
+        { "status": 403, "error": "Forbidden", "message": "Authentication required" },
+        { "status": 403, "error": "Forbidden", "message": "You cannot delete your own user" },
+        { "status": 403, "error": "Forbidden", "message": "Cannot delete the last admin" }
+      ]
+    },
+    "POST /api/users/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "User not found" }]
+    },
+    "POST /api/users/change-password": {
+      "includes": ["auth_errors", "base.body_required", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "User not found" },
+        { "status": 400, "error": "BadRequest", "message": "old_password and new_password are required" },
+        { "status": 403, "error": "Forbidden", "message": "Old password is incorrect" },
+        { "status": 400, "error": "BadRequest", "message": "New password must have at least 6 characters" }
+      ]
+    },
+    "GET /api/products/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/products/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "Product not found" }]
+    },
+    "POST /api/products/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "Product name is required" },
+        { "status": 403, "error": "Forbidden", "message": "Product name already exists" },
+        { "status": 403, "error": "Forbidden", "message": "cost_average cannot be set manually" }
+      ]
+    },
+    "PUT /api/products/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "Product not found" },
+        { "status": 403, "error": "Forbidden", "message": "cost_average cannot be modified directly" },
+        { "status": 403, "error": "Forbidden", "message": "Cannot change is_inventory when product has stock" },
+        { "status": 403, "error": "Forbidden", "message": "Another product with that name already exists" }
+      ]
+    },
+    "DELETE /api/products/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "Product not found" },
+        { "status": 403, "error": "Forbidden", "message": "Product cannot be deleted because stock exists" },
+        { "status": 403, "error": "Forbidden", "message": "Product cannot be deleted because it appears in purchase notes" },
+        { "status": 403, "error": "Forbidden", "message": "Product cannot be deleted because it appears in sales notes" },
+        { "status": 403, "error": "Forbidden", "message": "Product cannot be deleted because it has cost history" }
+      ]
+    },
+    "POST /api/products/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "Product not found" }]
+    },
+    "GET /api/customers/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/customers/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "Customer not found" }]
+    },
+    "POST /api/customers/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [{ "status": 400, "error": "BadRequest", "message": "Customer name is required" }]
+    },
+    "PUT /api/customers/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "Customer not found" }]
+    },
+    "DELETE /api/customers/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "Customer not found" },
+        { "status": 404, "error": "NotFound", "message": "Customer stock location not found" },
+        { "status": 403, "error": "Forbidden", "message": "Customer cannot be deleted because stock exists" },
+        { "status": 403, "error": "Forbidden", "message": "Customer cannot be deleted because sales exist" }
+      ]
+    },
+    "POST /api/customers/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "Customer not found" }]
+    },
+    "GET /api/suppliers/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/suppliers/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "Supplier not found" }]
+    },
+    "POST /api/suppliers/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "Supplier name is required" },
+        { "status": 403, "error": "Forbidden", "message": "Supplier name already exists" }
+      ]
+    },
+    "PUT /api/suppliers/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "Supplier not found" },
+        { "status": 403, "error": "Forbidden", "message": "Supplier name already exists" }
+      ]
+    },
+    "DELETE /api/suppliers/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "Supplier not found" },
+        { "status": 404, "error": "NotFound", "message": "Supplier cash account not found" },
+        { "status": 403, "error": "Forbidden", "message": "Supplier cannot be deleted because purchases exist" },
+        { "status": 403, "error": "Forbidden", "message": "Supplier cannot be deleted because cash balance is not zero" }
+      ]
+    },
+    "POST /api/suppliers/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "Supplier not found" }]
+    },
+    "GET /api/stock_locations/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/stock_locations/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockLocation not found" }]
+    },
+    "POST /api/stock_locations/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "Stock location name is required" },
+        { "status": 403, "error": "Forbidden", "message": "Stock location name already exists" },
+        { "status": 403, "error": "Forbidden", "message": "DEME stock location already exists" }
+      ]
+    },
+    "PUT /api/stock_locations/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockLocation not found" }]
+    },
+    "DELETE /api/stock_locations/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "StockLocation not found" },
+        { "status": 403, "error": "Forbidden", "message": "DEME stock location cannot be deleted" },
+        { "status": 403, "error": "Forbidden", "message": "Customer stock locations cannot be deleted manually" },
+        { "status": 403, "error": "Forbidden", "message": "Stock location cannot be deleted because it contains stock" }
+      ]
+    },
+    "POST /api/stock_locations/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockLocation not found" }]
+    },
+    "GET /api/stock_product_locations/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/stock_product_locations/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockProductLocation not found" }]
+    },
+    "POST /api/stock_product_locations/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "product_id and location_id are required" },
+        { "status": 403, "error": "Forbidden", "message": "StockProductLocation already exists" }
+      ]
+    },
+    "PUT /api/stock_product_locations/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockProductLocation not found" }]
+    },
+    "DELETE /api/stock_product_locations/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "StockProductLocation not found" },
+        { "status": 404, "error": "NotFound", "message": "StockLocation not found" },
+        { "status": 403, "error": "Forbidden", "message": "Stock row cannot be deleted because quantity is greater than zero" },
+        { "status": 403, "error": "Forbidden", "message": "Stock rows in DEME stock location cannot be deleted" }
+      ]
+    },
+    "POST /api/stock_product_locations/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockProductLocation not found" }]
+    },
+    "GET /api/cash_accounts/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/cash_accounts/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "CashAccount not found" }]
+    },
+    "POST /api/cash_accounts/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "CashAccount name is required" },
+        { "status": 403, "error": "Forbidden", "message": "CashAccount name already exists" }
+      ]
+    },
+    "PUT /api/cash_accounts/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "CashAccount not found" }]
+    },
+    "DELETE /api/cash_accounts/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "CashAccount not found" },
+        { "status": 403, "error": "Forbidden", "message": "CashAccount cannot be deleted because balance is not zero" }
+      ]
+    },
+    "POST /api/cash_accounts/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "CashAccount not found" }]
+    },
+    "GET /api/cash_accounts/by_name/{name}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "CashAccount not found" }
+      ]
+    },
+    "GET /api/purchase_notes/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/purchase_notes/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "PurchaseNote not found" }]
+    },
+    "POST /api/purchase_notes/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "paid_amount must be 0 when creating a DRAFT purchase note" }
+      ]
+    },
+    "PUT /api/purchase_notes/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "PurchaseNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "PurchaseNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "DELETE /api/purchase_notes/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "PurchaseNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "PurchaseNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "POST /api/purchase_notes/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "PurchaseNote not found" }]
+    },
+    "POST /api/purchase_notes/{id}/confirm": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "PurchaseNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "PurchaseNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "PurchaseNote cannot be confirmed without lines" },
+        { "status": 400, "error": "BadRequest", "message": "paid_amount cannot exceed total_amount" },
+        { "status": 400, "error": "BadRequest", "message": "DEME stock location not found" },
+        { "status": 400, "error": "BadRequest", "message": "Purchase movement requires lines" },
+        { "status": 400, "error": "BadRequest", "message": "Stock cannot become negative" },
+        { "status": 400, "error": "BadRequest", "message": "DEME CashAccount not found" },
+        { "status": 400, "error": "BadRequest", "message": "Supplier cash account not found" },
+        { "status": 403, "error": "Forbidden", "message": "CashAccount balance cannot become negative" }
+      ]
+    },
+    "GET /api/purchase_notes/{id}/lines": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 400, "error": "BadRequest", "message": "purchase_note_id is required" }]
+    },
+    "POST /api/purchase_notes/{id}/lines": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "purchase_note_id is required" },
+        { "status": 404, "error": "NotFound", "message": "PurchaseNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "PurchaseNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "paid_amount cannot exceed total_amount" }
+      ]
+    },
+    "PUT /api/purchase_notes/{id}/lines/{line_id}": {
+      "includes": ["auth_errors", "base.body_required", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "purchase_note_id is required" },
+        { "status": 400, "error": "BadRequest", "message": "purchase_note_id is not editable" },
+        { "status": 400, "error": "BadRequest", "message": "Invalid field: <field>" },
+        { "status": 404, "error": "NotFound", "message": "PurchaseNote not found" },
+        { "status": 404, "error": "NotFound", "message": "PurchaseNoteLine not found" },
+        { "status": 403, "error": "Forbidden", "message": "PurchaseNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "paid_amount cannot exceed total_amount" }
+      ]
+    },
+    "DELETE /api/purchase_notes/{id}/lines/{line_id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "purchase_note_id is required" },
+        { "status": 404, "error": "NotFound", "message": "PurchaseNote not found" },
+        { "status": 404, "error": "NotFound", "message": "PurchaseNoteLine not found" },
+        { "status": 403, "error": "Forbidden", "message": "PurchaseNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "paid_amount cannot exceed total_amount" }
+      ]
+    },
+    "DELETE /api/purchase_notes/lines/{line_id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "PurchaseNoteLine not found" }
+      ]
+    },
+    "GET /api/sales_notes/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/sales_notes/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "SalesNote not found" }]
+    },
+    "POST /api/sales_notes/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": []
+    },
+    "PUT /api/sales_notes/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "SalesNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "SalesNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "DELETE /api/sales_notes/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "SalesNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "SalesNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "POST /api/sales_notes/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "SalesNote not found" }]
+    },
+    "POST /api/sales_notes/{id}/confirm": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "SalesNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "SalesNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "SalesNote cannot be confirmed without lines" },
+        { "status": 400, "error": "BadRequest", "message": "Sale movement requires lines" },
+        { "status": 400, "error": "BadRequest", "message": "Customer stock location not found" },
+        { "status": 400, "error": "BadRequest", "message": "DEME stock location not found" },
+        { "status": 400, "error": "BadRequest", "message": "Stock cannot become negative" },
+        { "status": 400, "error": "BadRequest", "message": "DEME CashAccount not found" }
+      ]
+    },
+    "GET /api/sales_notes/{id}/lines": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 400, "error": "BadRequest", "message": "sales_note_id is required" }]
+    },
+    "POST /api/sales_notes/{id}/lines": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "sales_note_id is required" },
+        { "status": 404, "error": "NotFound", "message": "SalesNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "SalesNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "PUT /api/sales_notes/{id}/lines/{line_id}": {
+      "includes": ["auth_errors", "base.body_required", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "sales_note_id is required" },
+        { "status": 400, "error": "BadRequest", "message": "sales_note_id is not editable" },
+        { "status": 400, "error": "BadRequest", "message": "Invalid field: <field>" },
+        { "status": 404, "error": "NotFound", "message": "SalesNote not found" },
+        { "status": 404, "error": "NotFound", "message": "SalesNoteLine not found" },
+        { "status": 403, "error": "Forbidden", "message": "SalesNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "DELETE /api/sales_notes/{id}/lines/{line_id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "sales_note_id is required" },
+        { "status": 404, "error": "NotFound", "message": "SalesNote not found" },
+        { "status": 404, "error": "NotFound", "message": "SalesNoteLine not found" },
+        { "status": 403, "error": "Forbidden", "message": "SalesNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "DELETE /api/sales_notes/lines/{line_id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "SalesNoteLine not found" }
+      ]
+    },
+    "GET /api/stock_deposit_notes/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/stock_deposit_notes/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockDepositNote not found" }]
+    },
+    "POST /api/stock_deposit_notes/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": []
+    },
+    "PUT /api/stock_deposit_notes/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "StockDepositNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "StockDepositNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "DELETE /api/stock_deposit_notes/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "StockDepositNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "StockDepositNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "POST /api/stock_deposit_notes/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "StockDepositNote not found" }]
+    },
+    "POST /api/stock_deposit_notes/{id}/confirm": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "StockDepositNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "StockDepositNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "StockDepositNote quantity cannot be zero" },
+        { "status": 400, "error": "BadRequest", "message": "Deposit quantity must be greater than zero" },
+        { "status": 400, "error": "BadRequest", "message": "Stock cannot become negative" }
+      ]
+    },
+    "GET /api/cash_transfer_notes/": { "includes": ["auth_errors", "base.unexpected"], "errors": [] },
+    "GET /api/cash_transfer_notes/{id}": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "CashTransferNote not found" }]
+    },
+    "POST /api/cash_transfer_notes/": {
+      "includes": ["auth_errors", "base.body_required", "base.integrity", "base.db_create", "base.unexpected"],
+      "errors": []
+    },
+    "PUT /api/cash_transfer_notes/{id}": {
+      "includes": ["auth_errors", "base.body_required", "base.invalid_field", "base.integrity", "base.db_update", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "CashTransferNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "CashTransferNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "DELETE /api/cash_transfer_notes/{id}": {
+      "includes": ["auth_errors", "base.db_delete", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "CashTransferNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "CashTransferNote is not editable unless in DRAFT status" }
+      ]
+    },
+    "POST /api/cash_transfer_notes/{id}/restore": {
+      "includes": ["auth_errors", "base.db_restore", "base.unexpected"],
+      "errors": [{ "status": 404, "error": "NotFound", "message": "CashTransferNote not found" }]
+    },
+    "POST /api/cash_transfer_notes/{id}/confirm": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 404, "error": "NotFound", "message": "CashTransferNote not found" },
+        { "status": 403, "error": "Forbidden", "message": "CashTransferNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "Transfer amount must be greater than zero" },
+        { "status": 400, "error": "BadRequest", "message": "Source and destination cash accounts must be different" },
+        { "status": 400, "error": "BadRequest", "message": "CashAccount not found" },
+        { "status": 403, "error": "Forbidden", "message": "CashAccount balance cannot become negative" }
+      ]
+    },
+    "GET /api/backup": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 403, "error": "Forbidden", "message": "Only admin can perform backup operations" },
+        { "status": 500, "error": "ServerError", "message": "Backup failed: <detail>" }
+      ]
+    },
+    "POST /api/backup": {
+      "includes": ["auth_errors", "base.unexpected"],
+      "errors": [
+        { "status": 400, "error": "BadRequest", "message": "File is required" },
+        { "status": 403, "error": "Forbidden", "message": "Only admin can perform backup operations" },
+        { "status": 400, "error": "BadRequest", "message": "Invalid SQL content" },
+        { "status": 500, "error": "ServerError", "message": "Restore failed: <detail>" }
+      ]
+    }
+  }
+}

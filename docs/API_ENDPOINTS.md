@@ -30,6 +30,10 @@ Para recursos CRUD estándar:
 
 Las respuestas de éxito devuelven el objeto serializado.
 
+## Catálogo de errores
+
+El catálogo oficial de errores por endpoint está en `docs/error_catalog.json`.
+
 ## Auth
 
 ### POST `/api/auth/login`
