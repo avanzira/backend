@@ -43,6 +43,37 @@ class SalesLineController(BaseController):
 
     service = sales_lines_service
 
+    def get_lines(self, sales_id: int):
+        """
+        Devuelve líneas de una SalesNote.
+
+        Endpoint:
+        GET /api/sales_notes/<sales_id>/lines
+        """
+        lines = self.service.get_by_sales_note_id(sales_id)
+        return self.response_ok([line.to_dict() for line in lines])
+
+    def update_line(self, sales_id: int, line_id: int):
+        """
+        Actualiza una línea de venta asociada a una SalesNote.
+
+        Endpoint:
+        PUT /api/sales_notes/<sales_id>/lines/<line_id>
+        """
+        data = self.parse_json(required=True)
+        line = self.service.update_line(sales_id, line_id, data)
+        return self.response_ok(line.to_dict())
+
+    def delete_line(self, sales_id: int, line_id: int):
+        """
+        Soft delete de una línea de venta asociada a una SalesNote.
+
+        Endpoint:
+        DELETE /api/sales_notes/<sales_id>/lines/<line_id>
+        """
+        self.service.delete_line(sales_id, line_id)
+        return self.response_ok({})
+
     def create_line(self, sales_id: int):
         """
         Crea una línea de venta asociada a una SalesNote.

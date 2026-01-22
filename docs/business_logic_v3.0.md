@@ -49,6 +49,11 @@ La `PurchaseNote` **no gestiona pagos posteriores**.
 
 Al confirmar una `PurchaseNote` se ejecutan, en una **única transacción**, las siguientes acciones:
 
+Previo a los movimientos:
+
+- Se recalcula `total_amount` desde las líneas activas.
+- Se valida `paid_amount <= total_amount`.
+
 ---
 
 ### Stock
@@ -93,11 +98,11 @@ Notas importantes:
 
 ---
 
-## 3. Movimientos de cash — CashTransferNotes
+## 3. Movimientos de cash — CashTransferNote
 
 ### 3.1 Naturaleza del documento
 
-`CashTransferNotes` es un **documento genérico y flexible** de movimiento de efectivo.
+`CashTransferNote` es un **documento genérico y flexible** de movimiento de efectivo.
 
 Se utiliza para:
 
@@ -106,7 +111,7 @@ Se utiliza para:
 - Otros pagos no ligados a producto
 - Ajustes de efectivo
 
-El backend **no distingue tipos funcionales** de `CashTransferNotes`.
+El backend **no distingue tipos funcionales** de `CashTransferNote`.
 La semántica concreta se define por:
 
 - las cuentas origen/destino
@@ -115,9 +120,9 @@ La semántica concreta se define por:
 
 ---
 
-### 3.2 Confirmación de CashTransferNotes
+### 3.2 Confirmación de CashTransferNote
 
-Al confirmar un `CashTransferNotes`:
+Al confirmar un `CashTransferNote`:
 
 - from: `CashAccount` origen
 - to: `CashAccount` destino
@@ -151,14 +156,14 @@ Convención de uso (no técnica):
 - En frontend existirá una pantalla específica para pagar deudas.
 - En backend:
 
-  - se usa el mismo `CashTransferNotes`
+  - se usa el mismo `CashTransferNote`
   - se añade una nota, por ejemplo:
 
     > “Liquidación de deudas a fecha DD/MM/YYYY”
 
 No existe relación estructural entre:
 
-- `CashTransferNotes`
+- `CashTransferNote`
 - `PurchaseNote`
 
 La relación es **contable**, no documental.
@@ -181,6 +186,11 @@ Por tanto:
 ### 4.2 Confirmación de SalesNote
 
 Al confirmar una `SalesNote`:
+
+Previo a los movimientos:
+
+- Se recalcula `total_amount` desde las líneas activas.
+- `paid_amount` se iguala a `total_amount`.
 
 ---
 
@@ -237,7 +247,7 @@ Al confirmar una `SalesNote`:
    - genera deuda
    - **no** la liquida
 
-4. `CashTransferNotes`:
+4. `CashTransferNote`:
 
    - es independiente
    - puede usarse para múltiples finalidades

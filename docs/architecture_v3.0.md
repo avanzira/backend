@@ -19,7 +19,8 @@ Define **organización técnica**, **contratos por capa**, **métodos/funciones 
 
 - **Models**: archivo y clase en **singular**; tablas en **plural**.
 - **Services / Controllers / Routers**: archivo e instancia en **plural**.
-- Líneas: `{document}_line` (ej.: `purchase_notes_line`, `sales_notes_line`).
+- Líneas (router/controller/service): `purchase_line`, `sales_line`.
+- Líneas (model): `{document}_note_line` (ej.: `purchase_note_line`, `sales_note_line`).
 
 ### 0.2 Capas (ley)
 
@@ -52,29 +53,29 @@ src/app/
 │       ├── stock_product_locations_router.py
 │       ├── cash_accounts_router.py
 │       ├── purchase_notes_router.py
-│       ├── purchase_notes_line_router.py
+│       ├── purchase_line_router.py
 │       ├── sales_notes_router.py
-│       ├── sales_notes_line_router.py
-│       ├── stock_deposits_router.py
-│       ├── cash_transfers_router.py
+│       ├── sales_line_router.py
+│       ├── stock_deposit_notes_router.py
+│       ├── cash_transfer_notes_router.py
 │       └── backup_router.py
 │
 ├── controllers/
 │   ├── base_controller.py
 │   ├── auth_controller.py
-│   ├── users_controller.py
+│   ├── user_controller.py
 │   ├── products_controller.py
 │   ├── customers_controller.py
 │   ├── suppliers_controller.py
 │   ├── stock_locations_controller.py
 │   ├── stock_product_locations_controller.py
-│   ├── cash_accounts_controller.py
+│   ├── cash_account_controller.py
 │   ├── purchase_notes_controller.py
-│   ├── purchase_notes_line_controller.py
+│   ├── purchase_line_controller.py
 │   ├── sales_notes_controller.py
-│   ├── sales_notes_line_controller.py
-│   ├── stock_deposits_controller.py
-│   ├── cash_transfers_controller.py
+│   ├── sales_line_controller.py
+│   ├── stock_deposit_notes_controller.py
+│   ├── cash_transfer_notes_controller.py
 │   └── backup_controller.py
 │
 ├── services/
@@ -88,11 +89,11 @@ src/app/
 │   ├── stock_product_locations_service.py
 │   ├── cash_accounts_service.py
 │   ├── purchase_notes_service.py
-│   ├── purchase_notes_line_service.py
+│   ├── purchase_lines_service.py
 │   ├── sales_notes_service.py
-│   ├── sales_notes_line_service.py
-│   ├── stock_deposits_service.py
-│   ├── cash_transfers_service.py
+│   ├── sales_lines_service.py
+│   ├── stock_deposit_notes_service.py
+│   ├── cash_transfer_notes_service.py
 │   └── backup_service.py
 │
 ├── models/
@@ -135,18 +136,12 @@ src/app/
 │   └── database.db
 │
 └── tests/
-    ├── test_users.py
-    ├── test_products.py
-    ├── test_customers.py
-    ├── test_suppliers.py
-    ├── test_stock_locations.py
-    ├── test_stock_product_locations.py
-    ├── test_cash_accounts.py
-    ├── test_purchase_notes.py
-    ├── test_sales_notes.py
-    ├── test_stock_deposits.py
-    ├── test_cash_transfers.py
-    └── test_full_flow.py
+    ├── README_tests_v3.0.md
+    ├── conftest.py
+    ├── test_000_health.py
+    ├── test_010_auth.py
+    ├── test_100_full_flow_basic.py
+    └── test_900_api_smoke.py
 ```
 
 ---
@@ -211,8 +206,8 @@ Routers que se limitan al CRUD estándar:
 - `stock_locations_router`
 - `stock_product_locations_router`
 - `cash_accounts_router`
-- `stock_deposits_router`
-- `cash_transfers_router`
+- `stock_deposit_notes_router`
+- `cash_transfer_notes_router`
 
 ---
 
@@ -226,15 +221,15 @@ Routers CRUD que añaden endpoints extra además del CRUD:
 - `sales_notes_router`
   - `POST /confirm` → `SalesNotesController.confirm`
 
-- `purchase_notes_line_router`
-  - `POST   /<int:purchase_note_id>/lines` → `create_line`
-  - `GET    /<int:purchase_note_id>/lines` → `get_lines`
-  - `DELETE /lines/<int:line_id>` → `delete_line`
+- `purchase_line_router`
+  - `POST   /<int:purchase_id>/lines` → `create_line`
+  - `GET    /<int:purchase_id>/lines` → `get_all`
+  - `DELETE /lines/<int:id>` → `delete`
 
-- `sales_notes_line_router`
-  - `POST   /<int:sales_note_id>/lines` → `create_line`
-  - `GET    /<int:sales_note_id>/lines` → `get_lines`
-  - `DELETE /lines/<int:line_id>` → `delete_line`
+- `sales_line_router`
+  - `POST   /<int:sales_id>/lines` → `create_line`
+  - `GET    /<int:sales_id>/lines` → `get_all`
+  - `DELETE /lines/<int:id>` → `delete`
 
 ---
 
@@ -243,16 +238,9 @@ Routers CRUD que añaden endpoints extra además del CRUD:
 Routers especiales que no usan `BaseRouter`:
 
 - `auth_router`
-  - `POST /auth/login`
-  - `POST /auth/refresh`
-  - `GET  /auth/me`
-
-- `stock_movements_router`
-  - `POST /stock_movements/transfer`
-  - `POST /stock_movements/adjust`
-
-- `cash_movements_router`
-  - `POST /cash_movements/transfer` _(o la lista exacta de endpoints que defináis en plantilla)_
+  - `POST /api/auth/login`
+  - `POST /api/auth/refresh`
+  - `GET  /api/auth/me`
 
 - `backup_router`
   - `GET  /backup` → export

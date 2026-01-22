@@ -147,6 +147,11 @@ class PurchaseNotesService(BaseService):
                 "PurchaseNote cannot be confirmed without lines"
             )
 
+        total = sum((line.total_price for line in lines), 0)
+        if purchase.paid_amount > total:
+            raise BadRequestException("paid_amount cannot exceed total_amount")
+        purchase.total_amount = total
+
         # --------------------------------------------------------
         # MOVIMIENTO DE STOCK
         #
@@ -175,6 +180,7 @@ class PurchaseNotesService(BaseService):
         # Cambio de estado del documento
         # --------------------------------------------------------
         purchase.status = enum.DocumentStatus.CONFIRMED
+        purchase.updated_at = datetime.now(timezone.utc)
         purchase.updated_by = g.current_user.id if g.current_user else None
 
         db_session.commit()

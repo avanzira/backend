@@ -53,6 +53,37 @@ class PurchaseLineController(BaseController):
 
     service = purchase_lines_service
 
+    def get_lines(self, purchase_id: int):
+        """
+        Devuelve líneas de una PurchaseNote.
+
+        Endpoint:
+        GET /api/purchase_notes/<purchase_id>/lines
+        """
+        lines = self.service.get_by_purchase_note_id(purchase_id)
+        return self.response_ok([line.to_dict() for line in lines])
+
+    def update_line(self, purchase_id: int, line_id: int):
+        """
+        Actualiza una línea de compra asociada a una PurchaseNote.
+
+        Endpoint:
+        PUT /api/purchase_notes/<purchase_id>/lines/<line_id>
+        """
+        data = self.parse_json(required=True)
+        line = self.service.update_line(purchase_id, line_id, data)
+        return self.response_ok(line.to_dict())
+
+    def delete_line(self, purchase_id: int, line_id: int):
+        """
+        Soft delete de una línea de compra asociada a una PurchaseNote.
+
+        Endpoint:
+        DELETE /api/purchase_notes/<purchase_id>/lines/<line_id>
+        """
+        self.service.delete_line(purchase_id, line_id)
+        return self.response_ok({})
+
     def create_line(self, purchase_id: int):
         """
         Crea una línea de compra asociada a una PurchaseNote.

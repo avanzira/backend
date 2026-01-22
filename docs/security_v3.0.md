@@ -46,7 +46,7 @@ id
 username
 email
 hash_password
-rol            (admin | user)
+rol            (ADMIN | USER)
 password_changed_at
 last_login
 is_active
@@ -70,7 +70,7 @@ deleted_at
 3. El rol efectivo se define como:
 
    ```
-   is_admin = (rol == "admin")
+   is_admin = (rol == "ADMIN")
    ```
 
 ---
@@ -80,7 +80,7 @@ deleted_at
 ### Endpoint
 
 ```
-POST /auth/login
+POST /api/auth/login
 body = {
   username,
   password
@@ -219,7 +219,7 @@ Toda ruta protegida **debe ejecutar** el middleware de seguridad.
 Las **únicas rutas públicas** permitidas son:
 
 * `/`
-* `/auth/login`
+* `/api/auth/login`
 
 Todas las demás rutas requieren JWT válido.
 

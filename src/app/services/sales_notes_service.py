@@ -145,6 +145,10 @@ class SalesNotesService(BaseService):
                 "SalesNote cannot be confirmed without lines"
             )
 
+        total = sum((line.total_price for line in lines), 0)
+        sale.total_amount = total
+        sale.paid_amount = total
+
         # --------------------------------------------------------
         # MOVIMIENTO DE STOCK
         #
@@ -173,6 +177,7 @@ class SalesNotesService(BaseService):
         # Cambio de estado del documento
         # --------------------------------------------------------
         sale.status = enum.DocumentStatus.CONFIRMED
+        sale.updated_at = datetime.now(timezone.utc)
         sale.updated_by = g.current_user.id if g.current_user else None
 
         db_session.commit()

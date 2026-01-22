@@ -23,7 +23,7 @@ Todos los models heredan de `BaseModel`.
 
 - `id`: int, PK
 - `created_at`: datetime, not null
-- `updated_at`: datetime, not null
+- `updated_at`: datetime | null
 - `deleted_at`: datetime | null
 - `is_active`: bool, default true
 - `created_by`: int | null (FK `users.id`)
@@ -45,15 +45,12 @@ Cada model **extiende** este método para la serialización usada por los contro
 ## 1. enum DE DOMINIO (fuente única de verdad)
 
 Los enum **NO viven en models**.
-Viven en `src/app/core/enum/` y son usados por models y services.
+Viven en `src/app/core/enum.py` y son usados por models y services.
 
 enum definidos:
 
 - `UserRole`: `ADMIN | USER`
 - `DocumentStatus`: `DRAFT | CONFIRMED`
-- `StockMovementType`: `PURCHASE | SALE | TRANSFER | ADJUSTMENT`
-
-> Nota: `StockMovementType` **no forma parte del schema**, ya que los movimientos no se persisten.
 
 ---
 
@@ -195,7 +192,7 @@ enum definidos:
 **Campos propios:**
 
 - `supplier_id`: int, FK `suppliers.id`, not null
-- `date`: date, not null (fecha del acto de negocio)
+- `date`: datetime, not null (fecha del acto de negocio)
 - `status`: enum(DocumentStatus), not null
 - `total_amount`: decimal(14,2), not null
 - `paid_amount`: decimal(14,2), not null, default 0
@@ -229,7 +226,7 @@ enum definidos:
 **Campos propios:**
 
 - `customer_id`: int, FK `customers.id`, not null
-- `date`: date, not null
+- `date`: datetime, not null
 - `status`: enum(DocumentStatus), not null
 - `total_amount`: decimal(14,2), not null
 - `paid_amount`: decimal(14,2), not null
@@ -263,7 +260,7 @@ enum definidos:
 
 - `from_stock_location_id`: int, FK `stock_locations.id`, not null
 - `to_stock_location_id`: int, FK `stock_locations.id`, not null
-- `date`: date, not null
+- `date`: datetime, not null
 - `product_id`: int, FK `products.id`, not null
 - `quantity`: decimal(12,3), not null
 - `status`: enum(DocumentStatus), not null
@@ -285,7 +282,7 @@ enum definidos:
 - `from_cash_account_id`: int, FK `cash_accounts.id`, not null
 - `to_cash_account_id`: int, FK `cash_accounts.id`, not null
 - `amount`: decimal(14,2), not null
-- `date`: date, not null
+- `date`: datetime, not null
 - `status`: enum(DocumentStatus), not null
 - `notes`: str | null
 
