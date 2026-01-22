@@ -23,6 +23,7 @@ Flujo típico en la API:
 
 from src.app.controllers.base_controller import BaseController
 from src.app.services.stock_deposit_notes_service import stock_deposit_notes_service
+from datetime import date as py_date
 
 
 class StockDepositNotesController(BaseController):
@@ -31,6 +32,30 @@ class StockDepositNotesController(BaseController):
     """
 
     service = stock_deposit_notes_service
+
+    def create(self):
+        """
+        Crea un StockDepositNote en estado DRAFT.
+        """
+        payload = self.parse_json(required=True)
+
+        if "date" in payload and isinstance(payload["date"], str):
+            payload["date"] = py_date.fromisoformat(payload["date"])
+
+        note = self.service.create(payload)
+        return self.response_created(note.to_dict())
+
+    def update(self, id: int):
+        """
+        Actualiza un StockDepositNote en estado DRAFT.
+        """
+        payload = self.parse_json(required=True)
+
+        if "date" in payload and isinstance(payload["date"], str):
+            payload["date"] = py_date.fromisoformat(payload["date"])
+
+        note = self.service.update(id, payload)
+        return self.response_ok(note.to_dict())
 
     def confirm(self, id: int):
         """

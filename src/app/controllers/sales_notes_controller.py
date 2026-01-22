@@ -34,6 +34,18 @@ class SalesNotesController(BaseController):
         note = self.service.create(payload)
         return self.response_created(note.to_dict())
 
+    def update(self, id: int):
+        """
+        Actualiza una SalesNote en estado DRAFT.
+        """
+        payload = self.parse_json(required=True)
+
+        if "date" in payload and isinstance(payload["date"], str):
+            payload["date"] = py_date.fromisoformat(payload["date"])
+
+        note = self.service.update(id, payload)
+        return self.response_ok(note.to_dict())
+
     def confirm(self, id: int):
         """
         Confirma una SalesNote existente.

@@ -108,6 +108,8 @@ Create DRAFT (`POST /api/purchase_notes/`) requiere:
 { "supplier_id": 1, "date": "YYYY-MM-DD", "paid_amount": 0 }
 ```
 
+`date` acepta `YYYY-MM-DD` en create/update.
+
 Líneas (`POST /api/purchase_notes/<id>/lines`) requiere:
 
 ```json
@@ -148,6 +150,8 @@ Create DRAFT (`POST /api/sales_notes/`) requiere:
 ```json
 { "customer_id": 1, "date": "YYYY-MM-DD", "paid_amount": 0 }
 ```
+
+`date` acepta `YYYY-MM-DD` en create/update.
 
 Líneas (`POST /api/sales_notes/<id>/lines`) requiere:
 
@@ -215,6 +219,8 @@ Create (`POST /api/stock_deposit_notes/`) requiere:
   "date": "YYYY-MM-DD",
   "notes": "..."
 }
+
+`date` acepta `YYYY-MM-DD` en create/update.
 ```
 
 Confirmar (`POST /api/stock_deposit_notes/<id>/confirm`): sin body.
@@ -243,6 +249,8 @@ Create (`POST /api/cash_transfer_notes/`) requiere:
   "date": "YYYY-MM-DD",
   "notes": "..."
 }
+
+`date` acepta `YYYY-MM-DD` en create/update.
 ```
 
 Confirmar (`POST /api/cash_transfer_notes/<id>/confirm`): sin body.
