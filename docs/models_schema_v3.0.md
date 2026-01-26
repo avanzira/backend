@@ -258,8 +258,8 @@ enum definidos:
 
 **Campos propios:**
 
-- `from_stock_location_id`: int, FK `stock_locations.id`, not null
-- `to_stock_location_id`: int, FK `stock_locations.id`, not null
+- `from_stock_location_id`: int, FK `stock_locations.id`, null
+- `to_stock_location_id`: int, FK `stock_locations.id`, null
 - `date`: datetime, not null
 - `product_id`: int, FK `products.id`, not null
 - `quantity`: decimal(12,3), not null
@@ -270,6 +270,7 @@ enum definidos:
 
 - No cambia la propiedad económica del stock (solo la ubicación)
 - No genera cash
+- Requiere `from_stock_location_id` o `to_stock_location_id`
 
 ---
 
@@ -279,8 +280,8 @@ enum definidos:
 
 **Campos propios:**
 
-- `from_cash_account_id`: int, FK `cash_accounts.id`, not null
-- `to_cash_account_id`: int, FK `cash_accounts.id`, not null
+- `from_cash_account_id`: int, FK `cash_accounts.id`, null
+- `to_cash_account_id`: int, FK `cash_accounts.id`, null
 - `amount`: decimal(14,2), not null
 - `date`: datetime, not null
 - `status`: enum(DocumentStatus), not null
@@ -291,6 +292,7 @@ enum definidos:
 - `amount > 0`
 - Nunca genera balance positivo en suppliers
 - Se usa para liquidar deudas y transferencias internas
+- Requiere `from_cash_account_id` o `to_cash_account_id`
 
 ---
 

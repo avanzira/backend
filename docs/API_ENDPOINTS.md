@@ -227,6 +227,9 @@ Create (`POST /api/stock_deposit_notes/`) requiere:
 `date` acepta `YYYY-MM-DD` en create/update.
 ```
 
+`from_stock_location_id` o `to_stock_location_id` pueden ser `null` (u omitirse),
+pero no ambos al mismo tiempo.
+
 Confirmar (`POST /api/stock_deposit_notes/<id>/confirm`): sin body.
 
 Salida incluye `from_stock_location_id`, `to_stock_location_id`, `product_id`, `quantity`, `date`, `status`, `notes`.
@@ -256,6 +259,9 @@ Create (`POST /api/cash_transfer_notes/`) requiere:
 
 `date` acepta `YYYY-MM-DD` en create/update.
 ```
+
+`from_cash_account_id` o `to_cash_account_id` pueden ser `null` (u omitirse),
+pero no ambos al mismo tiempo.
 
 Confirmar (`POST /api/cash_transfer_notes/<id>/confirm`): sin body.
 

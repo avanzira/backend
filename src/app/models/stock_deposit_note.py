@@ -34,8 +34,8 @@ class StockDepositNote(BaseModel):
     # CAMPOS PRINCIPALES
     # ============================================================
 
-    from_stock_location_id: Mapped[int] = mapped_column(ForeignKey("stock_locations.id"), nullable=False)
-    to_stock_location_id: Mapped[int] = mapped_column(ForeignKey("stock_locations.id"), nullable=False)
+    from_stock_location_id: Mapped[int | None] = mapped_column(ForeignKey("stock_locations.id"), nullable=True)
+    to_stock_location_id: Mapped[int | None] = mapped_column(ForeignKey("stock_locations.id"), nullable=True)
 
     date: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), nullable=False)

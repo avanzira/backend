@@ -31,8 +31,8 @@ class CashTransferNote(BaseModel):
     # CAMPOS PRINCIPALES
     # ============================================================
 
-    from_cash_account_id: Mapped[int] = mapped_column(ForeignKey("cash_accounts.id"), nullable=False)
-    to_cash_account_id: Mapped[int] = mapped_column(ForeignKey("cash_accounts.id"), nullable=False)
+    from_cash_account_id: Mapped[int | None] = mapped_column(ForeignKey("cash_accounts.id"), nullable=True)
+    to_cash_account_id: Mapped[int | None] = mapped_column(ForeignKey("cash_accounts.id"), nullable=True)
 
     date: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     status: Mapped[DocumentStatus] = mapped_column(SAEnum(DocumentStatus), nullable=False)

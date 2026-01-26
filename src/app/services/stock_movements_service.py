@@ -154,19 +154,24 @@ class StockMovementsService:
         if deposit.quantity <= 0:
             raise BadRequestException("Deposit quantity must be greater than zero")
 
-        self._apply_delta(
-            product_id=deposit.product_id,
-            location_id=deposit.from_stock_location_id,
-            delta=-deposit.quantity,
-            date=date,
-        )
+        if deposit.from_stock_location_id is None and deposit.to_stock_location_id is None:
+            raise BadRequestException("Deposit requires from_stock_location_id or to_stock_location_id")
 
-        self._apply_delta(
-            product_id=deposit.product_id,
-            location_id=deposit.to_stock_location_id,
-            delta=deposit.quantity,
-            date=date,
-        )
+        if deposit.from_stock_location_id is not None:
+            self._apply_delta(
+                product_id=deposit.product_id,
+                location_id=deposit.from_stock_location_id,
+                delta=-deposit.quantity,
+                date=date,
+            )
+
+        if deposit.to_stock_location_id is not None:
+            self._apply_delta(
+                product_id=deposit.product_id,
+                location_id=deposit.to_stock_location_id,
+                delta=deposit.quantity,
+                date=date,
+            )
 
     # ------------------------------------------------------------
     # DELTA CORE

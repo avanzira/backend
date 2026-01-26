@@ -138,24 +138,28 @@ class CashMovementsService:
         Transferencia de efectivo entre cuentas.
         """
 
-        from_account = self._get_account(transfer.from_cash_account_id)
-        to_account = self._get_account(transfer.to_cash_account_id)
+        if transfer.from_cash_account_id is None and transfer.to_cash_account_id is None:
+            raise BadRequestException("CashTransfer requires from_cash_account_id or to_cash_account_id")
 
-        self._apply_delta(
-            account=from_account,
-            delta=Decimal(-transfer.amount),
-            forbid_negative=True,
-            forbid_positive=False,
-            date=date,
-        )
+        if transfer.from_cash_account_id is not None:
+            from_account = self._get_account(transfer.from_cash_account_id)
+            self._apply_delta(
+                account=from_account,
+                delta=Decimal(-transfer.amount),
+                forbid_negative=True,
+                forbid_positive=False,
+                date=date,
+            )
 
-        self._apply_delta(
-            account=to_account,
-            delta=Decimal(transfer.amount),
-            forbid_negative=False,
-            forbid_positive=False,
-            date=date,
-        )
+        if transfer.to_cash_account_id is not None:
+            to_account = self._get_account(transfer.to_cash_account_id)
+            self._apply_delta(
+                account=to_account,
+                delta=Decimal(transfer.amount),
+                forbid_negative=False,
+                forbid_positive=False,
+                date=date,
+            )
 
     # ------------------------------------------------------------
     # DELTA CORE
