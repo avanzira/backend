@@ -472,6 +472,7 @@
         { "status": 404, "error": "NotFound", "message": "StockDepositNote not found" },
         { "status": 403, "error": "Forbidden", "message": "StockDepositNote is not editable unless in DRAFT status" },
         { "status": 400, "error": "BadRequest", "message": "StockDepositNote quantity cannot be zero" },
+        { "status": 400, "error": "BadRequest", "message": "Deposit requires from_stock_location_id or to_stock_location_id" },
         { "status": 400, "error": "BadRequest", "message": "Deposit quantity must be greater than zero" },
         { "status": 400, "error": "BadRequest", "message": "Stock cannot become negative" }
       ]
@@ -508,6 +509,7 @@
       "errors": [
         { "status": 404, "error": "NotFound", "message": "CashTransferNote not found" },
         { "status": 403, "error": "Forbidden", "message": "CashTransferNote is not editable unless in DRAFT status" },
+        { "status": 400, "error": "BadRequest", "message": "CashTransfer requires from_cash_account_id or to_cash_account_id" },
         { "status": 400, "error": "BadRequest", "message": "Transfer amount must be greater than zero" },
         { "status": 400, "error": "BadRequest", "message": "Source and destination cash accounts must be different" },
         { "status": 400, "error": "BadRequest", "message": "CashAccount not found" },

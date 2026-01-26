@@ -4,3 +4,5 @@ __pycache__/
 instance/
 backups/*
 .env.local
+src/app/db/database.db
+logs/
